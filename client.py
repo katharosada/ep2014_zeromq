@@ -2,6 +2,7 @@
 import argparse
 import zmq
 import socket
+import json
 
 
 def get_local_ip():
@@ -10,20 +11,27 @@ def get_local_ip():
 
     :returns IpAddress as String
     """
-    ip = socket.gethostbyname(socket.gethostname())
-    return ip
+###    ip = socket.gethostbyname(socket.gethostname())
+    return "172.16.2.17"
 
 context = zmq.Context()
 
 socket = context.socket(zmq.DEALER)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-c', '--connect-address', default='tcp://172.16.16.228:5555')
+parser.add_argument('-c', '--connect-address', default='tcp://127.0.0.1:5555')
 
 args = parser.parse_args()
 
 socket.connect(args.connect_address)
-for i in range(10):
-    msg = "Hi server this is my message {}".format(i)
-    socket.send(msg)
-    print socket.recv()
+port = 5555
+msg = "HELLO {} {}".format(get_local_ip(), port)
+socket.send(msg)
+res = socket.recv()
+print res
+js = json.load(res)
+print js
+
+
+
+
